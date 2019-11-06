@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 using LitJson;
+using System.Linq;
 
 public class JsonManager : SingletonMB<JsonManager>
 {
@@ -12,7 +13,7 @@ public class JsonManager : SingletonMB<JsonManager>
     // Start is called before the first frame update
     void Start()
     {
-        StartCoroutine(GetCurrencyConversion("EUR","TND","2018-11-18"));
+        //StartCoroutine(GetCurrencyConversion("EUR","TND","2018-11-18"));
     }
 
     // Update is called once per frame
@@ -33,7 +34,7 @@ public class JsonManager : SingletonMB<JsonManager>
         }
         else
         {
-            // Show results as text
+            // Save results as text
             Result = www.downloadHandler.text;
         }
     }
@@ -41,10 +42,40 @@ public class JsonManager : SingletonMB<JsonManager>
     public IEnumerator GetCurrencyConversion(string from,string to,string date)
     {
         yield return LoadFromURL("https://free.currconv.com/api/v7/convert?apiKey=3a33892339936b3e46e4&q=" + from + "_" + to + "&date=" + date);
-        print("https://free.currconv.com/api/v7/convert?apiKey=3a33892339936b3e46e4&q=" + from + "_" + to + "&date=" + date);
-        print(Result);
+
+        //convert the json text to jsonData object
         JsonData JsonResult = JsonMapper.ToObject(Result);
-        print(JsonResult["results"][0]["val"][0]);
+        print(Result);
+        //Get the conversion value from the jsonResult and save it into a Variable in the CurrencyDataManager script
+        CurrencyDataManager.Instance.ConversionValue =float.Parse(JsonResult["results"][0]["val"][0].ToString());
     }
-    
+
+    public IEnumerator GetCurrencyConversion(string from, string to)
+    {
+        yield return LoadFromURL("https://free.currconv.com/api/v7/convert?apiKey=3a33892339936b3e46e4&q=" + from + "_" + to);
+
+        //convert the json text to jsonData object
+        JsonData JsonResult = JsonMapper.ToObject(Result);
+
+        //Get the conversion value from the jsonResult and save it into a Variable in the CurrencyDataManager script
+        CurrencyDataManager.Instance.ConversionValue = float.Parse(JsonResult["results"][0]["val"].ToString());
+    }
+
+    public IEnumerator GetCurrencyIDs()
+    {
+        yield return LoadFromURL("https://free.currconv.com/api/v7/countries?apiKey=3a33892339936b3e46e4");
+
+        //convert the json text to jsonData object
+        JsonData JsonResult = JsonMapper.ToObject(Result);
+
+        CurrencyDataManager.Instance.CurrencyIDs = new List<string>();
+        for(int i = 0; i < JsonResult["results"].Count; i++)
+        {
+            CurrencyDataManager.Instance.CurrencyIDs.Add(JsonResult["results"][i]["currencyId"].ToString());
+        }
+
+        //delete redundancy from the list
+        CurrencyDataManager.Instance.CurrencyIDs = CurrencyDataManager.Instance.CurrencyIDs.Distinct().ToList();
+    }
+
 }
