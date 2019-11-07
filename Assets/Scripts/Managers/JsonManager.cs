@@ -82,6 +82,9 @@ public class JsonManager : SingletonMB<JsonManager>
 
         //delete redundancy from the list
         CurrencyDataManager.Instance.CurrencyIDs = CurrencyDataManager.Instance.CurrencyIDs.Distinct().ToList();
+
+        //sort the list alphabetically
+        CurrencyDataManager.Instance.CurrencyIDs.Sort();
     }
 
 }
