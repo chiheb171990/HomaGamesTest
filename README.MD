@@ -15,8 +15,8 @@
 * **Additional Feature** : An original Logo for the app designed with Adobe Illustrator
 
 ## Installation
-Copy and paste the "CurrencyConverter.apk" found under "App" folder in your Android mobile and click on it to install it.
-
+1. Copy the "CurrencyConverter.apk" found under the "App" folder and Paste it in your Android mobile .
+2. Click on the apk file and follow the installation process . 
 ## Additional Resources
 * Currency API : https://free.currencyconverterapi.com/
 * LitJson Plugin : https://github.com/Mervill/UnityLitJson
