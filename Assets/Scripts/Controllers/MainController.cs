@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MainController : MonoBehaviour
+public class MainController : SingletonMB<MainController>
 {
     // Start is called before the first frame update
 
@@ -11,6 +11,7 @@ public class MainController : MonoBehaviour
     public GameObject ConnectionCheckPanel;
     public GameObject CurrencyPanel;
     public GameObject DatePanel;
+    
 
     [Header("UI Elements")]
     public Dropdown DropDownFrom;
@@ -20,6 +21,10 @@ public class MainController : MonoBehaviour
     public Dropdown YearDropDown;
     public Dropdown MonthDropDown;
     public Dropdown DayDropDown;
+
+    [Header("Notification")]
+    public GameObject NotificationPanel;
+    public Text TextNotification;
 
     //Private Variables
     private bool IsDateNow = false;
@@ -71,6 +76,7 @@ public class MainController : MonoBehaviour
         }
     }
 
+    //Check if the user check a specific date or the current Date
     public void CheckIsDateNow()
     {
         if (IsDateNow)
@@ -107,7 +113,16 @@ public class MainController : MonoBehaviour
             yield return StartCoroutine(JsonManager.Instance.GetCurrencyConversion(from, to,date));
         }
 
+        //Calculate the converted Amount
         float AmountResult = CurrencyDataManager.Instance.ConversionValue * float.Parse(CuerrencyValue.text);
+
+        //Display the result in the inputfield
         CurrencyResult.text = AmountResult.ToString();
+    }
+
+    public void EnableNotificationPanel(string notification)
+    {
+        NotificationPanel.SetActive(true);
+        TextNotification.text = notification;
     }
 }

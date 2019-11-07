@@ -13,7 +13,7 @@ public class JsonManager : SingletonMB<JsonManager>
     // Start is called before the first frame update
     void Start()
     {
-        //StartCoroutine(GetCurrencyConversion("EUR","TND","2018-11-18"));
+        
     }
 
     // Update is called once per frame
@@ -31,6 +31,9 @@ public class JsonManager : SingletonMB<JsonManager>
         if (www.isNetworkError || www.isHttpError)
         {
             Debug.Log(www.error);
+
+            //Enable the notification Panel to show the error
+            MainController.Instance.EnableNotificationPanel("Current version allows up to 1 year earlier. \n Please choose another date. ");
         }
         else
         {
@@ -39,17 +42,19 @@ public class JsonManager : SingletonMB<JsonManager>
         }
     }
 
+    //Get Currency conversion in a specific day
     public IEnumerator GetCurrencyConversion(string from,string to,string date)
     {
         yield return LoadFromURL("https://free.currconv.com/api/v7/convert?apiKey=3a33892339936b3e46e4&q=" + from + "_" + to + "&date=" + date);
 
         //convert the json text to jsonData object
         JsonData JsonResult = JsonMapper.ToObject(Result);
-        print(Result);
+        
         //Get the conversion value from the jsonResult and save it into a Variable in the CurrencyDataManager script
         CurrencyDataManager.Instance.ConversionValue =float.Parse(JsonResult["results"][0]["val"][0].ToString());
     }
 
+    //Get currency conversion Now
     public IEnumerator GetCurrencyConversion(string from, string to)
     {
         yield return LoadFromURL("https://free.currconv.com/api/v7/convert?apiKey=3a33892339936b3e46e4&q=" + from + "_" + to);
@@ -61,6 +66,7 @@ public class JsonManager : SingletonMB<JsonManager>
         CurrencyDataManager.Instance.ConversionValue = float.Parse(JsonResult["results"][0]["val"].ToString());
     }
 
+    //Get the currency IDs
     public IEnumerator GetCurrencyIDs()
     {
         yield return LoadFromURL("https://free.currconv.com/api/v7/countries?apiKey=3a33892339936b3e46e4");
