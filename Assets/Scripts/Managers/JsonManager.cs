@@ -9,6 +9,7 @@ public class JsonManager : SingletonMB<JsonManager>
 {
 
     public string Result; //The request will be saved in the Result variable
+    private bool isRequestError;
 
     // Start is called before the first frame update
     void Start()
@@ -32,11 +33,17 @@ public class JsonManager : SingletonMB<JsonManager>
         {
             Debug.Log(www.error);
 
+            //The is error in the request
+            isRequestError = true;
+
             //Enable the notification Panel to show the error
             MainController.Instance.EnableNotificationPanel("Current version allows up to 1 year earlier. \n Please choose another date. ");
         }
         else
         {
+            // There is no error in the request
+            isRequestError = false;
+
             // Save results as text
             Result = www.downloadHandler.text;
         }
@@ -47,11 +54,15 @@ public class JsonManager : SingletonMB<JsonManager>
     {
         yield return LoadFromURL("https://free.currconv.com/api/v7/convert?apiKey=3a33892339936b3e46e4&q=" + from + "_" + to + "&date=" + date);
 
-        //convert the json text to jsonData object
-        JsonData JsonResult = JsonMapper.ToObject(Result);
-        
-        //Get the conversion value from the jsonResult and save it into a Variable in the CurrencyDataManager script
-        CurrencyDataManager.Instance.ConversionValue =float.Parse(JsonResult["results"][0]["val"][0].ToString());
+        //If there is no error in the request
+        if (!isRequestError)
+        {
+            //convert the json text to jsonData object
+            JsonData JsonResult = JsonMapper.ToObject(Result);
+
+            //Get the conversion value from the jsonResult and save it into a Variable in the CurrencyDataManager script
+            CurrencyDataManager.Instance.ConversionValue = float.Parse(JsonResult["results"][0]["val"][0].ToString());
+        }
     }
 
     //Get currency conversion Now
@@ -59,11 +70,15 @@ public class JsonManager : SingletonMB<JsonManager>
     {
         yield return LoadFromURL("https://free.currconv.com/api/v7/convert?apiKey=3a33892339936b3e46e4&q=" + from + "_" + to);
 
-        //convert the json text to jsonData object
-        JsonData JsonResult = JsonMapper.ToObject(Result);
+        //If there is no error in the request
+        if (!isRequestError)
+        {
+            //convert the json text to jsonData object
+            JsonData JsonResult = JsonMapper.ToObject(Result);
 
-        //Get the conversion value from the jsonResult and save it into a Variable in the CurrencyDataManager script
-        CurrencyDataManager.Instance.ConversionValue = float.Parse(JsonResult["results"][0]["val"].ToString());
+            //Get the conversion value from the jsonResult and save it into a Variable in the CurrencyDataManager script
+            CurrencyDataManager.Instance.ConversionValue = float.Parse(JsonResult["results"][0]["val"].ToString());
+        }
     }
 
     //Get the currency IDs
